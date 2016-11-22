@@ -14,6 +14,22 @@ using namespace std;
 class Iterator;
 class NullIterator;
 class UnaryIterator;
+class Op;
+class Visitor {
+private:
+    string output;
+public:
+    virtual void rootNode() = 0;
+    virtual void sqrNode() = 0;
+    virtual void multNode() = 0;
+    virtual void subNode() = 0;
+    virtual void addNode() = 0;
+    virtual void opNode(Op* op) = 0;
+
+    virtual void execute() = 0;
+
+};
+
 
 //Abstract Base Class
 class Base {
@@ -26,6 +42,7 @@ class Base {
         virtual Iterator* create_iterator() = 0;
         virtual Base* get_left() = 0;
         virtual Base* get_right() = 0;
+        virtual void accept(Visitor* vis) = 0;
 };
 //Leaf Class
 class Op: public Base {
@@ -39,9 +56,9 @@ class Op: public Base {
         double evaluate(); 
         void print();
         Iterator* create_iterator();
-        // void accept(Visitor* vis) {
-        //     vis->opNode(this);
-        // }
+        void accept(Visitor* vis) {
+            vis->opNode(this);
+        }
 };
 
 //Composite Base Classes
@@ -56,7 +73,7 @@ class Operator: public Base {
         Base* get_right();
         virtual double evaluate() = 0;	//Note: this is implicit in the inheritance, but can also be made explicit
         Iterator* create_iterator();
-        // virtual void accept(Visitor* vis) = 0;
+        virtual void accept(Visitor* vis) = 0;
 };
 
 class UnaryOperator: public Base {
@@ -70,7 +87,7 @@ class UnaryOperator: public Base {
         Base* get_right();
         virtual double evaluate() = 0;	//Note: this is implicit in the inheritance, but can also be made explicit
         Iterator* create_iterator();
-        // virtual void accept(Visitor* vis) = 0;
+        virtual void accept(Visitor* vis) = 0;
 };
 
 //Composite Classes
@@ -81,9 +98,9 @@ class Add: public Operator {
 
         void print();
         double evaluate();
-        // void accept(Visitor* vis) {
-        //     vis->addNode();
-        // }
+        void accept(Visitor* vis) {
+            vis->addNode();
+        }
 };
 
 class Sub: public Operator {
@@ -93,9 +110,9 @@ class Sub: public Operator {
 
         void print();
         double evaluate();
-        // void accept(Visitor* vis) {
-        //     vis->subNode();
-        // }
+        void accept(Visitor* vis) {
+            vis->subNode();
+        }
 };
 
 class Mult: public Operator {
@@ -105,9 +122,9 @@ class Mult: public Operator {
 
         void print();
         double evaluate();
-        // void accept(Visitor* vis) {
-        //     vis->multNode();
-        // }
+        void accept(Visitor* vis) {
+            vis->multNode();
+        }
 };
 
 class Sqr: public UnaryOperator {
@@ -117,9 +134,9 @@ class Sqr: public UnaryOperator {
 
         void print();
         double evaluate();
-        // void accept(Visitor* vis) {
-        //     vis->sqrNode();
-        // }        
+        void accept(Visitor* vis) {
+            vis->sqrNode();
+        }        
 };
 
 class Root: public UnaryOperator {
@@ -129,9 +146,9 @@ class Root: public UnaryOperator {
 
         void print();
         double evaluate();
-        // void accept(Visitor* vis) {
-        //     vis->rootNode();
-        // }
+        void accept(Visitor* vis) {
+            vis->rootNode();
+        }
 };
 
 class Iterator {
@@ -241,20 +258,7 @@ public:
     Base* current();
 };
 
-class Visitor {
-private:
-    string output;
-public:
-    virtual void rootNode() = 0;
-    virtual void sqrNode() = 0;
-    virtual void multNode() = 0;
-    virtual void subNode() = 0;
-    virtual void addNode() = 0;
-    virtual void opNode(Op* op) = 0;
 
-    virtual void execute() = 0;
-
-};
 
 class PrintVisitor: public Visitor {
 public:
@@ -279,7 +283,8 @@ public:
     }
     void opNode(Op* op) {
         output += " ";
-        output = op->value;
+        output += op->value;
+        
     }
 
     void execute() {

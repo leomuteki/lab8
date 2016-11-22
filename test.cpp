@@ -13,13 +13,18 @@ int main() {
 	Sub* sub = new Sub(add, sqr);
 	Root* root = new Root(sub);
 
-	cout << "--- PreOrder Iteration ---" << endl;
+	//cout << "--- PreOrder Iteration ---" << endl;
+	PrintVisitor* printer = new PrintVisitor();
 	PreOrderIterator* pre_itr = new PreOrderIterator(root);
 	int i = 0;
 	for(pre_itr->first(); !pre_itr->is_done(); pre_itr->next()) {
 		if(pre_itr) {
-			pre_itr->current()->print();
-			cout << endl;
+			// pre_itr->current()->print();
+			// cout << endl;
+			pre_itr->current()->accept(printer);
 		}
 	}
+
+	printer->execute();
+
 };
